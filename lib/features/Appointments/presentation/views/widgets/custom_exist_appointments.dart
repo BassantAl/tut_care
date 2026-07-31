@@ -78,8 +78,6 @@ class _TappableAppointmentCard extends StatelessWidget {
       AppRoutes.appointmentDetails,
       extra: appointment,
     );
-
-    // Refresh the list after a successful cancellation.
     if (result == true && context.mounted) {
       context.read<GetMyAppointmentsBloc>().add(MyAppointmentsEvent());
     }
