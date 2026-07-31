@@ -43,7 +43,7 @@ class CustomNoAppoinments extends StatelessWidget {
                 const SizedBox(height: 12),
 
                 Text(
-                  'You do not have any appointments. Book your first appointment to get started.',
+                  'You do not have any appointments yet.\nBook your first appointment to get started.',
                   textAlign: TextAlign.center,
                   style: AppStyles.regular16(
                     context,
@@ -53,17 +53,7 @@ class CustomNoAppoinments extends StatelessWidget {
                 const SizedBox(height: 32),
 
                 GestureDetector(
-                  onTap: () async {
-                    final result = await GoRouter.of(
-                      context,
-                    ).push<bool>(AppRoutes.bookAppointment);
-
-                    if (result == true && context.mounted) {
-                      context.read<GetMyAppointmentsBloc>().add(
-                        MyAppointmentsEvent(),
-                      );
-                    }
-                  },
+                  onTap: () => _navigateToBook(context),
                   child: const CustomAddAppointment(),
                 ),
               ],
@@ -72,5 +62,16 @@ class CustomNoAppoinments extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _navigateToBook(BuildContext context) async {
+    final result = await GoRouter.of(context).push<bool>(
+      AppRoutes.bookAppointment,
+    );
+
+    // Refresh the list if an appointment was successfully booked.
+    if (result == true && context.mounted) {
+      context.read<GetMyAppointmentsBloc>().add(MyAppointmentsEvent());
+    }
   }
 }

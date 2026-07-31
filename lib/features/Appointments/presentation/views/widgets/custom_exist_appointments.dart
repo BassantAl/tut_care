@@ -9,8 +9,9 @@ import 'package:tut_care/features/Appointments/presentation/views/widgets/custom
 import 'package:tut_care/features/Appointments/presentation/views/widgets/custom_app_bar.dart';
 
 class CustomExistAppointments extends StatelessWidget {
-  const CustomExistAppointments({super.key, required this.myAppointments});
+  const CustomExistAppointments({super.key, required this.myAppointments,});
   final List<MyAppointmentModel> myAppointments;
+
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
@@ -21,26 +22,20 @@ class CustomExistAppointments extends StatelessWidget {
         const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
         SliverList(
-          delegate: SliverChildBuilderDelegate((context, index) {
-            return AppointmentCard(appointment: myAppointments[index]);
-          }, childCount: myAppointments.length),
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              final appointment = myAppointments[index];
+              return _TappableAppointmentCard(appointment: appointment ,);
+            },
+            childCount: myAppointments.length,
+          ),
         ),
 
         const SliverToBoxAdapter(child: SizedBox(height: 20)),
 
         SliverToBoxAdapter(
           child: GestureDetector(
-            onTap: () async {
-              final result = await GoRouter.of(
-                context,
-              ).push<bool>(AppRoutes.bookAppointment);
-
-              if (result == true && context.mounted) {
-                context.read<GetMyAppointmentsBloc>().add(
-                  MyAppointmentsEvent(),
-                );
-              }
-            },
+            onTap: () => _navigateToBook(context),
             child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: CustomAddAppointment(),
@@ -51,5 +46,42 @@ class CustomExistAppointments extends StatelessWidget {
         const SliverToBoxAdapter(child: SizedBox(height: 24)),
       ],
     );
+  }
+
+  Future<void> _navigateToBook(BuildContext context) async {
+    final result = await GoRouter.of(context).push<bool>(
+      AppRoutes.bookAppointment,
+    );
+    if (result == true && context.mounted) {
+      context.read<GetMyAppointmentsBloc>().add(MyAppointmentsEvent());
+    }
+  }
+}
+
+
+class _TappableAppointmentCard extends StatelessWidget {
+  const _TappableAppointmentCard({required this.appointment,});
+ 
+
+  final MyAppointmentModel appointment;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _navigateToDetails(context),
+      child: AppointmentCard(appointment: appointment,),
+    );
+  }
+
+  Future<void> _navigateToDetails(BuildContext context) async {
+    final result = await GoRouter.of(context).push<bool>(
+      AppRoutes.appointmentDetails,
+      extra: appointment,
+    );
+
+    // Refresh the list after a successful cancellation.
+    if (result == true && context.mounted) {
+      context.read<GetMyAppointmentsBloc>().add(MyAppointmentsEvent());
+    }
   }
 }
