@@ -6,8 +6,12 @@ import 'package:tut_care/features/Appointments/data/models/my_appointment_model.
 
 abstract class AppointmentsRepo {
   Future<Either<Failure, List<MyAppointmentModel>>> getMYAppointments();
-   Future<Either<Failure, List<AvailableDoctorModel>>> getDoctors();
-   Future<Either<Failure, void>> bookAppointment(
-  BookAppointmentRequestModel request,
-);
+
+  Future<Either<Failure, List<AvailableDoctorModel>>> getDoctors();
+
+  Future<Either<Failure, void>> bookAppointment(
+    BookAppointmentRequestModel request,
+  );
+
+  Future<Either<Failure, void>> cancelAppointment(int id);
 }

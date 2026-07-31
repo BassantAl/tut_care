@@ -10,18 +10,15 @@ import 'package:tut_care/features/Appointments/data/repos/appointments_repo.dart
 
 class AppointmentsRepoImpl implements AppointmentsRepo {
   AppointmentsRepoImpl({required this.apiService});
+
   final ApiService apiService;
+
   @override
   Future<Either<Failure, List<MyAppointmentModel>>> getMYAppointments() async {
-    List<MyAppointmentModel> data = [];
     try {
-      var result = await apiService.get(url: '/api/Patient/MyAppointments');
-      List<dynamic> appointments = result.data as List<dynamic>;
-
-       data = appointments.map(
-        (e) => MyAppointmentModel.fromJson(e),
-      ).toList();
-
+      final result = await apiService.get(url: '/api/Patient/MyAppointments');
+      final appointments = result.data as List<dynamic>;
+      final data = appointments.map((e) => MyAppointmentModel.fromJson(e)).toList();
       return right(data);
     } on DioException catch (e) {
       return left(ServerFailure.fromDioException(e));
@@ -29,53 +26,47 @@ class AppointmentsRepoImpl implements AppointmentsRepo {
       return left(Failure(errorMessage: e.toString()));
     }
   }
-  
+
   @override
-Future<Either<Failure, List<AvailableDoctorModel>>> getDoctors() async {
-  try {
-    final result = await apiService.get(
-      url: '/api/Patient/Doctors',
-    );
-
-    final List<dynamic> doctors = result.data as List<dynamic>;
-
-    final data = doctors
-        .map((e) => AvailableDoctorModel.fromJson(e))
-        .toList();
-
-    return right(data);
-  } on DioException catch (e) {
-    return left(ServerFailure.fromDioException(e));
-  } catch (e) {
-    return left(
-      Failure(
-        errorMessage: e.toString(),
-      ),
-    );
+  Future<Either<Failure, List<AvailableDoctorModel>>> getDoctors() async {
+    try {
+      final result = await apiService.get(url: '/api/Patient/Doctors');
+      final doctors = result.data as List<dynamic>;
+      final data = doctors.map((e) => AvailableDoctorModel.fromJson(e)).toList();
+      return right(data);
+    } on DioException catch (e) {
+      return left(ServerFailure.fromDioException(e));
+    } catch (e) {
+      return left(Failure(errorMessage: e.toString()));
+    }
   }
-}
 
-@override
-Future<Either<Failure, void>> bookAppointment(
-  BookAppointmentRequestModel request,
-) async {
-  try {
-    await apiService.post(
-      url: '/api/Patient/Book',
-      data: request.toJson(),
-    );
-
-    return const Right(null);
-  } on DioException catch (e) {
-    return Left(
-      ServerFailure.fromDioException(e),
-    );
-  } catch (e) {
-    return Left(
-      Failure(
-        errorMessage: e.toString(),
-      ),
-    );
+  @override
+  Future<Either<Failure, void>> bookAppointment(
+    BookAppointmentRequestModel request,
+  ) async {
+    try {
+      await apiService.post(
+        url: '/api/Patient/Book',
+        data: request.toJson(),
+      );
+      return const Right(null);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
+    } catch (e) {
+      return Left(Failure(errorMessage: e.toString()));
+    }
   }
-}
+
+  @override
+  Future<Either<Failure, void>> cancelAppointment(int id) async {
+    try {
+      await apiService.delete(url: '/api/Patient/Cancel/$id');
+      return const Right(null);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
+    } catch (e) {
+      return Left(Failure(errorMessage: e.toString()));
+    }
+  }
 }
