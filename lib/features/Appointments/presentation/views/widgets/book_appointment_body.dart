@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tut_care/core/theme/app_colors.dart';
+import 'package:tut_care/core/theme/app_styles.dart';
 import 'package:tut_care/core/widgets/custom_error_widget.dart';
+import 'package:tut_care/core/widgets/custom_loading_indicator.dart';
 import 'package:tut_care/features/Appointments/data/models/available_doctor_model.dart';
 import 'package:tut_care/features/Appointments/data/models/book_appointment_request_model.dart';
 import 'package:tut_care/features/Appointments/presentation/manager/book_appointment_bloc/book_appointment_bloc.dart';
@@ -22,7 +24,6 @@ class BookAppointmentBody extends StatefulWidget {
 
 class _BookAppointmentBodyState extends State<BookAppointmentBody> {
   AvailableDoctorModel? selectedDoctor;
-
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
 
@@ -32,25 +33,33 @@ class _BookAppointmentBodyState extends State<BookAppointmentBody> {
       child: BlocListener<BookAppointmentBloc, BookAppointmentState>(
         listener: (context, state) {
           if (state is BookAppointmentSuccess) {
-        GoRouter.of(context).pop(true);
-      }
-      if (state is BookAppointmentFailure) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: AppColors.secondary,
-              content: CustomErrorWidget(errorMessage: state.errorMessage),
-            ),
-          );
-      }
+            GoRouter.of(context).pop(true);
+          }
+
+          if (state is BookAppointmentFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.red.shade400,
+                behavior: SnackBarBehavior.floating,
+                content: CustomErrorWidget(errorMessage: state.errorMessage),
+              ),
+            );
+          }
         },
         child: BlocBuilder<GetDoctorsBloc, GetDoctorsState>(
           builder: (context, state) {
             if (state is GetDoctorsLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: CustomLoadingIndicator());
             }
 
             if (state is GetDoctorsFailure) {
-              return Center(child: Text(state.errorMessage));
+              return Center(
+                child: Text(
+                  state.errorMessage,
+                  style: AppStyles.medium16(context),
+                  textAlign: TextAlign.center,
+                ),
+              );
             }
 
             if (state is GetDoctorsSuccess) {
@@ -61,16 +70,22 @@ class _BookAppointmentBodyState extends State<BookAppointmentBody> {
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const CustomAppBar(title: 'Book Appointment'),
+
+                    const SizedBox(height: 8),
+
+                    if (selectedDoctor != null)
+                      _SelectedDoctorLabel(doctorName: selectedDoctor!.fullName),
+
+                    const SizedBox(height: 16),
 
                     DoctorDropdown(
                       doctors: state.doctors,
                       value: selectedDoctor,
                       onChanged: (doctor) {
-                        setState(() {
-                          selectedDoctor = doctor;
-                        });
+                        setState(() => selectedDoctor = doctor);
                       },
                     ),
 
@@ -85,11 +100,8 @@ class _BookAppointmentBodyState extends State<BookAppointmentBody> {
                           lastDate: DateTime(2030),
                           initialDate: DateTime.now(),
                         );
-
                         if (date != null) {
-                          setState(() {
-                            selectedDate = date;
-                          });
+                          setState(() => selectedDate = date);
                         }
                       },
                     ),
@@ -103,34 +115,20 @@ class _BookAppointmentBodyState extends State<BookAppointmentBody> {
                           context: context,
                           initialTime: TimeOfDay.now(),
                         );
-
                         if (time != null) {
-                          setState(() {
-                            selectedTime = time;
-                          });
+                          setState(() => selectedTime = time);
                         }
                       },
                     ),
 
                     const SizedBox(height: 40),
 
-                    BookAppointmentButton(
-                      onTap: () {
-                        final appointment = DateTime(
-                          selectedDate!.year,
-                          selectedDate!.month,
-                          selectedDate!.day,
-                          selectedTime!.hour,
-                          selectedTime!.minute,
-                        );
-
-                        context.read<BookAppointmentBloc>().add(
-                          BookAppointmentRequested(
-                            request: BookAppointmentRequestModel(
-                              doctorId: selectedDoctor!.id,
-                              appointmentDate: appointment,
-                            ),
-                          ),
+                    BlocBuilder<BookAppointmentBloc, BookAppointmentState>(
+                      builder: (context, bookState) {
+                        return BookAppointmentButton(
+                          onTap: bookState is BookAppointmentLoading
+                              ? null
+                              : _onBookTap,
                         );
                       },
                     ),
@@ -143,6 +141,79 @@ class _BookAppointmentBodyState extends State<BookAppointmentBody> {
           },
         ),
       ),
+    );
+  }
+
+  void _onBookTap() {
+    if (selectedDoctor == null) {
+      _showError('Please select a doctor.');
+      return;
+    }
+    if (selectedDate == null) {
+      _showError('Please select a date.');
+      return;
+    }
+    if (selectedTime == null) {
+      _showError('Please select a time.');
+      return;
+    }
+
+    final appointmentDateTime = DateTime(
+      selectedDate!.year,
+      selectedDate!.month,
+      selectedDate!.day,
+      selectedTime!.hour,
+      selectedTime!.minute,
+    );
+
+    context.read<BookAppointmentBloc>().add(
+  BookAppointmentRequested(
+    request: BookAppointmentRequestModel(
+      doctorId: selectedDoctor!.id,
+      appointmentDate: appointmentDateTime,
+    ),
+  ),
+);
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.red.shade400,
+        behavior: SnackBarBehavior.floating,
+        content: Text(
+          message,
+          style: AppStyles.medium16(context).copyWith(color: Colors.white),
+        ),
+      ),
+    );
+  }
+}
+
+
+class _SelectedDoctorLabel extends StatelessWidget {
+  const _SelectedDoctorLabel({required this.doctorName});
+
+  final String doctorName;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Icon(
+          Icons.check_circle_outline,
+          size: 16,
+          color: AppColors.secondary,
+        ),
+        const SizedBox(width: 6),
+        Text(
+          'Booking with $doctorName',
+          style: AppStyles.medium14(context).copyWith(
+            color: AppColors.secondary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 }
