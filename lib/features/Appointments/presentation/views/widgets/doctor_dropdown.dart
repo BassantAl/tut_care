@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tut_care/core/theme/app_decoration.dart';
+import 'package:tut_care/features/Appointments/data/models/available_doctor_model.dart';
 
 class DoctorDropdown extends StatelessWidget {
   const DoctorDropdown({
@@ -9,26 +10,26 @@ class DoctorDropdown extends StatelessWidget {
     required this.onChanged,
   });
 
-  final List<String> doctors;
-  final String? value;
-  final ValueChanged<String?> onChanged;
+  final List<AvailableDoctorModel> doctors;
+  final AvailableDoctorModel? value;
+  final ValueChanged<AvailableDoctorModel?> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
+    return DropdownButtonFormField<AvailableDoctorModel>(
       value: value,
       decoration: AppDecoration.decorationForTextInputFeild(
         context: context,
         hintText: 'Select Doctor',
       ),
-      items: doctors
-          .map(
-            (doctor) => DropdownMenuItem(
-              value: doctor,
-              child: Text(doctor),
-            ),
-          )
-          .toList(),
+      items: doctors.map((doctor) {
+        return DropdownMenuItem(
+          value: doctor,
+          child: Text(
+            '${doctor.fullName} (${doctor.specialization})',
+          ),
+        );
+      }).toList(),
       onChanged: onChanged,
     );
   }

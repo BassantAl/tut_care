@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tut_care/core/widgets/custom_error_widget.dart';
 import 'package:tut_care/core/widgets/custom_loading_indicator.dart';
-import 'package:tut_care/features/Appointments/presentation/manager/bloc/get_my_appointments_bloc.dart';
+import 'package:tut_care/features/Appointments/presentation/manager/get_my_appointments_bloc/get_my_appointments_bloc.dart';
 import 'package:tut_care/features/Appointments/presentation/views/widgets/custom_exist_appointments.dart';
 import 'package:tut_care/features/Appointments/presentation/views/widgets/custom_no_appointments.dart';
 
