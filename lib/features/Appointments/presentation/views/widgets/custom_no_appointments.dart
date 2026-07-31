@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tut_care/core/routes/app_routes.dart';
 import 'package:tut_care/core/theme/app_colors.dart';
 import 'package:tut_care/core/theme/app_styles.dart';
+import 'package:tut_care/features/Appointments/presentation/manager/get_my_appointments_bloc/get_my_appointments_bloc.dart';
 import 'package:tut_care/features/Appointments/presentation/views/widgets/custom_add_appointment.dart';
 import 'package:tut_care/features/Appointments/presentation/views/widgets/custom_app_bar.dart';
 
@@ -51,8 +53,16 @@ class CustomNoAppoinments extends StatelessWidget {
                 const SizedBox(height: 32),
 
                 GestureDetector(
-                  onTap: () {
-                    GoRouter.of(context).push(AppRoutes.bookAppointment);
+                  onTap: () async {
+                    final result = await GoRouter.of(
+                      context,
+                    ).push<bool>(AppRoutes.bookAppointment);
+
+                    if (result == true && context.mounted) {
+                      context.read<GetMyAppointmentsBloc>().add(
+                        MyAppointmentsEvent(),
+                      );
+                    }
                   },
                   child: const CustomAddAppointment(),
                 ),
