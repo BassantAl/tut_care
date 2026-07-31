@@ -16,33 +16,66 @@ class MyAppointmentsBody extends StatelessWidget {
       listener: (context, state) {},
       builder: (context, state) {
         if (state is GetMyAppointmentsLoading) {
-          return const Center(child: CustomLoadingIndicator());
+          return const Center(
+            child: CustomLoadingIndicator(),
+          );
         }
 
         if (state is GetMyAppointmentsFailure) {
-          return Center(child: CustomErrorWidget(errorMessage: state.errorMessage));
+          return Center(
+            child: CustomErrorWidget(
+              errorMessage: state.errorMessage,
+            ),
+          );
         }
 
         if (state is GetMyAppointmentsSuccess) {
-          return CustomScrollView(
-            slivers: [
-              const SliverToBoxAdapter(
-                child: CustomAppBar(title: 'Appointments'),
-              ),
-              const SliverToBoxAdapter(child: SizedBox(height: 16)),
-              SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  return AppointmentCard(
-                    appointment: state.myAppointments[index],
-                  );
-                }, childCount: state.myAppointments.length),
-              ),
-              const SliverToBoxAdapter(child: SizedBox(height: 20)),
-              const SliverToBoxAdapter(child: Padding(
-                padding: EdgeInsets.symmetric(horizontal:  16),
-                child: CustomAddAppointment(),
-              )),
-            ],
+          return RefreshIndicator(
+            onRefresh: () async {
+              context.read<GetMyAppointmentsBloc>().add(
+                 MyAppointmentsEvent(),
+              );
+            },
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                const SliverToBoxAdapter(
+                  child: CustomAppBar(
+                    title: 'Appointments',
+                  ),
+                ),
+
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 16),
+                ),
+
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      return AppointmentCard(
+                        appointment: state.myAppointments[index],
+                      );
+                    },
+                    childCount: state.myAppointments.length,
+                  ),
+                ),
+
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 20),
+                ),
+
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: CustomAddAppointment(),
+                  ),
+                ),
+
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 24),
+                ),
+              ],
+            ),
           );
         }
 

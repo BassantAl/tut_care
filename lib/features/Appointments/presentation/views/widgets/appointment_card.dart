@@ -76,9 +76,7 @@ class AppointmentCard extends StatelessWidget {
                 ],
               ),
             ),
-    
             const SizedBox(width: 12),
-    
             StatusBadge(
               status: appointment.status,
             ),
