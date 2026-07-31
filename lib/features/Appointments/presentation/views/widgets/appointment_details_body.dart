@@ -92,7 +92,7 @@ class _AppointmentDetailsBodyState extends State<AppointmentDetailsBody> {
 
               CancelAppointmentButton(
                 onTap: _onCancelTap,
-                isCancelled: _displayedStatus == 3,
+                isCancelled: _displayedStatus == 4,
               ),
 
               const SizedBox(height: 24),

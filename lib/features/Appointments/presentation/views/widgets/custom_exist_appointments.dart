@@ -5,11 +5,14 @@ import 'package:tut_care/core/routes/app_routes.dart';
 import 'package:tut_care/features/Appointments/data/models/my_appointment_model.dart';
 import 'package:tut_care/features/Appointments/presentation/manager/get_my_appointments_bloc/get_my_appointments_bloc.dart';
 import 'package:tut_care/features/Appointments/presentation/views/widgets/appointment_card.dart';
-import 'package:tut_care/features/Appointments/presentation/views/widgets/custom_add_appointment.dart';
 import 'package:tut_care/features/Appointments/presentation/views/widgets/custom_app_bar.dart';
 
 class CustomExistAppointments extends StatelessWidget {
-  const CustomExistAppointments({super.key, required this.myAppointments,});
+  const CustomExistAppointments({
+    super.key,
+    required this.myAppointments,
+  });
+
   final List<MyAppointmentModel> myAppointments;
 
   @override
@@ -17,51 +20,38 @@ class CustomExistAppointments extends StatelessWidget {
     return CustomScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
-        const SliverToBoxAdapter(child: CustomAppBar(title: 'Appointments')),
+        const SliverToBoxAdapter(
+          child: CustomAppBar(title: 'Appointments'),
+        ),
 
-        const SliverToBoxAdapter(child: SizedBox(height: 16)),
+        const SliverToBoxAdapter(
+          child: SizedBox(height: 16),
+        ),
 
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (context, index) {
               final appointment = myAppointments[index];
-              return _TappableAppointmentCard(appointment: appointment ,);
+              return _TappableAppointmentCard(
+                appointment: appointment,
+              );
             },
             childCount: myAppointments.length,
           ),
         ),
 
-        const SliverToBoxAdapter(child: SizedBox(height: 20)),
-
-        SliverToBoxAdapter(
-          child: GestureDetector(
-            onTap: () => _navigateToBook(context),
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: CustomAddAppointment(),
-            ),
-          ),
+        const SliverToBoxAdapter(
+          child: SizedBox(height: 24),
         ),
-
-        const SliverToBoxAdapter(child: SizedBox(height: 24)),
       ],
     );
   }
-
-  Future<void> _navigateToBook(BuildContext context) async {
-    final result = await GoRouter.of(context).push<bool>(
-      AppRoutes.bookAppointment,
-    );
-    if (result == true && context.mounted) {
-      context.read<GetMyAppointmentsBloc>().add(MyAppointmentsEvent());
-    }
-  }
 }
 
-
 class _TappableAppointmentCard extends StatelessWidget {
-  const _TappableAppointmentCard({required this.appointment,});
- 
+  const _TappableAppointmentCard({
+    required this.appointment,
+  });
 
   final MyAppointmentModel appointment;
 
@@ -69,7 +59,9 @@ class _TappableAppointmentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => _navigateToDetails(context),
-      child: AppointmentCard(appointment: appointment,),
+      child: AppointmentCard(
+        appointment: appointment,
+      ),
     );
   }
 
@@ -78,8 +70,11 @@ class _TappableAppointmentCard extends StatelessWidget {
       AppRoutes.appointmentDetails,
       extra: appointment,
     );
+
     if (result == true && context.mounted) {
-      context.read<GetMyAppointmentsBloc>().add(MyAppointmentsEvent());
+      context.read<GetMyAppointmentsBloc>().add(
+            MyAppointmentsEvent(),
+          );
     }
   }
 }

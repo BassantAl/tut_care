@@ -72,12 +72,20 @@ class _BookAppointmentBodyState extends State<BookAppointmentBody> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const CustomAppBar(title: 'Book Appointment'),
+                    CustomAppBar(
+                      leading: GestureDetector(
+                        onTap: () => context.pop(),
+                        child: const Icon(Icons.arrow_back),
+                      ),
+                      title: 'Book Appointment',
+                    ),
 
                     const SizedBox(height: 8),
 
                     if (selectedDoctor != null)
-                      _SelectedDoctorLabel(doctorName: selectedDoctor!.fullName),
+                      _SelectedDoctorLabel(
+                        doctorName: selectedDoctor!.fullName,
+                      ),
 
                     const SizedBox(height: 16),
 
@@ -167,13 +175,13 @@ class _BookAppointmentBodyState extends State<BookAppointmentBody> {
     );
 
     context.read<BookAppointmentBloc>().add(
-  BookAppointmentRequested(
-    request: BookAppointmentRequestModel(
-      doctorId: selectedDoctor!.id,
-      appointmentDate: appointmentDateTime,
-    ),
-  ),
-);
+      BookAppointmentRequested(
+        request: BookAppointmentRequestModel(
+          doctorId: selectedDoctor!.id,
+          appointmentDate: appointmentDateTime,
+        ),
+      ),
+    );
   }
 
   void _showError(String message) {
@@ -189,7 +197,6 @@ class _BookAppointmentBodyState extends State<BookAppointmentBody> {
     );
   }
 }
-
 
 class _SelectedDoctorLabel extends StatelessWidget {
   const _SelectedDoctorLabel({required this.doctorName});
@@ -208,10 +215,9 @@ class _SelectedDoctorLabel extends StatelessWidget {
         const SizedBox(width: 6),
         Text(
           'Booking with $doctorName',
-          style: AppStyles.medium14(context).copyWith(
-            color: AppColors.secondary,
-            fontWeight: FontWeight.w600,
-          ),
+          style: AppStyles.medium14(
+            context,
+          ).copyWith(color: AppColors.secondary, fontWeight: FontWeight.w600),
         ),
       ],
     );

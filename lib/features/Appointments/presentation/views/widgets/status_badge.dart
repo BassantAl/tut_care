@@ -29,7 +29,7 @@ class StatusBadge extends StatelessWidget {
         text = 'Completed';
         break;
 
-      case 3:
+      case 4:
         color = Colors.red;
         text = 'Cancelled';
         break;

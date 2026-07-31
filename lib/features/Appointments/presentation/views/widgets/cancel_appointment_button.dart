@@ -5,7 +5,7 @@ import 'package:tut_care/core/widgets/custom_button.dart';
 import 'package:tut_care/core/widgets/custom_loading_indicator.dart';
 import 'package:tut_care/features/Appointments/presentation/manager/cancel_appointment_bloc/cancel_appointment_bloc.dart';
 
-/
+
 class CancelAppointmentButton extends StatelessWidget {
   const CancelAppointmentButton({
     super.key,
@@ -18,27 +18,28 @@ class CancelAppointmentButton extends StatelessWidget {
   
   final bool isCancelled;
 
+  
   @override
-  Widget build(BuildContext context) {
-    if (isCancelled) return const SizedBox.shrink();
+Widget build(BuildContext context) {
+  return BlocBuilder<CancelAppointmentBloc, CancelAppointmentState>(
+    builder: (context, state) {
+      final isLoading = state is CancelAppointmentOptimistic;
 
-    return BlocBuilder<CancelAppointmentBloc, CancelAppointmentState>(
-      builder: (context, state) {
-        final isLoading = state is CancelAppointmentOptimistic;
-
-        return GestureDetector(
-          onTap: isLoading ? null : onTap,
-          child: CustomButton(
-            color: Colors.red.shade400,
-            child: isLoading
-                ? const CustomLoadingIndicator()
-                : Text(
-                    'Cancel Appointment',
-                    style: AppStyles.medium18(context),
-                  ),
-          ),
-        );
-      },
-    );
-  }
+      return GestureDetector(
+        onTap: isCancelled || isLoading ? null : onTap,
+        child: CustomButton(
+          color: isCancelled ? Colors.grey : Colors.red.shade400,
+          child: isLoading
+              ? const CustomLoadingIndicator()
+              : Text(
+                  isCancelled
+                      ? 'Cancelled'
+                      : 'Cancel Appointment',
+                  style: AppStyles.medium18(context),
+                ),
+        ),
+      );
+    },
+  );
+}
 }
