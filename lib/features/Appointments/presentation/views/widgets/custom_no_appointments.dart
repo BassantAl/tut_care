@@ -69,7 +69,6 @@ class CustomNoAppoinments extends StatelessWidget {
       AppRoutes.bookAppointment,
     );
 
-    // Refresh the list if an appointment was successfully booked.
     if (result == true && context.mounted) {
       context.read<GetMyAppointmentsBloc>().add(MyAppointmentsEvent());
     }
