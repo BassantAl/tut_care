@@ -10,15 +10,21 @@ class AppointmentsRepoImpl implements AppointmentsRepo {
   AppointmentsRepoImpl({required this.apiService});
   final ApiService apiService;
   @override
-  Future<Either<Failure, MyAppointmentModel>> getMYAppointments() async {
+  Future<Either<Failure, List<MyAppointmentModel>>> getMYAppointments() async {
+    List<MyAppointmentModel> data = [];
     try {
       var result = await apiService.get(url: '/api/Patient/MyAppointments');
-      MyAppointmentModel data = MyAppointmentModel.fromJson(result.data[0]);
+      List<dynamic> appointments = result.data as List<dynamic>;
+
+       data = appointments.map(
+        (e) => MyAppointmentModel.fromJson(e),
+      ).toList();
+
       return right(data);
     } on DioException catch (e) {
       return left(ServerFailure.fromDioException(e));
-    } catch(e){
-       return left(Failure(errorMessage: e.toString()));
+    } catch (e) {
+      return left(Failure(errorMessage: e.toString()));
     }
   }
 }
