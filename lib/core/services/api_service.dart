@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -8,14 +10,27 @@ class ApiService {
     );
   }
 
-  Future _onError(DioException error, ErrorInterceptorHandler handler) async {
+  final Dio dio;
+  final FlutterSecureStorage storage;
+
+
+  final StreamController<void> _sessionExpiredController =
+      StreamController<void>.broadcast();
+
+  Stream<void> get onSessionExpired => _sessionExpiredController.stream;
+
+  Future<void> _onError(
+    DioException error,
+    ErrorInterceptorHandler handler,
+  ) async {
     if (error.response?.statusCode == 401) {
-      await storage.delete(key: 'token');
+      await storage.deleteAll();
+      _sessionExpiredController.add(null);
     }
     handler.next(error);
   }
 
-  Future _onRequest(
+  Future<void> _onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
@@ -28,14 +43,12 @@ class ApiService {
     handler.next(options);
   }
 
-  final Dio dio;
-  final FlutterSecureStorage storage;
+
   Future<Response> get({
     required String url,
     Map<String, dynamic>? queryParameters,
   }) async {
-    Response result = await dio.get(url, queryParameters: queryParameters);
-    return result;
+    return dio.get(url, queryParameters: queryParameters);
   }
 
   Future<Response> post({
@@ -43,12 +56,7 @@ class ApiService {
     Map<String, dynamic>? data,
     Map<String, dynamic>? queryParameters,
   }) async {
-    Response result = await dio.post(
-      url,
-      data: data,
-      queryParameters: queryParameters,
-    );
-    return result;
+    return dio.post(url, data: data, queryParameters: queryParameters);
   }
 
   Future<Response> delete({
@@ -56,18 +64,15 @@ class ApiService {
     Map<String, dynamic>? data,
     Map<String, dynamic>? queryParameters,
   }) async {
-    Response result = await dio.delete(
-      url,
-      data: data,
-      queryParameters: queryParameters,
-    );
-    return result;
+    return dio.delete(url, data: data, queryParameters: queryParameters);
   }
 
+
   Future<void> saveToken(String token) async {
-  await storage.write(
-    key: 'token',
-    value: token,
-  );
-}
+    await storage.write(key: 'token', value: token);
+  }
+
+  Future<void> clearSession() async {
+    await storage.deleteAll();
+  }
 }
