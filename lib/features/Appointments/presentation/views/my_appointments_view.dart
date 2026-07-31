@@ -15,7 +15,7 @@ class MyAppointmentsView extends StatelessWidget {
         body: SafeArea(
           child: AdaptiveLayout(
             mobileLayout: (context) => const MyAppointmentsBody(),
-            tabletLayout: (context) => const SizedBox(),
+            tabletLayout: (context) => const MyAppointmentsBody(),
           ),
         ),
       ),
