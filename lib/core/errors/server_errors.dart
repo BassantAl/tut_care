@@ -39,7 +39,7 @@ class ServerFailure extends Failure {
     if (statusCode == 400 || statusCode == 401 || statusCode == 403) {
       return ServerFailure(
         statusCode: statusCode,
-        errorMessage: response['error']['message'] ?? 'Oops there was an error',
+        errorMessage: response is String? response  : 'Oops there was an error',
       );
     } else if (statusCode == 404) {
       return ServerFailure(errorMessage: 'request not found');

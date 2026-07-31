@@ -11,7 +11,6 @@ class AuthRepoImpl implements AuthRepo {
   AuthRepoImpl({required this.apiService});
 
   final ApiService apiService;
-  
 
   @override
   Future<Either<Failure, LoginResponseModel>> loginRequest({
@@ -20,9 +19,14 @@ class AuthRepoImpl implements AuthRepo {
     try {
       Response result = await apiService.post(
         url: '/api/Auth/Login',
-        data:loginRequestModel.toJson()
+        data: loginRequestModel.toJson(),
       );
-      return right(LoginResponseModel.fromJson(result.data as Map<String, dynamic>));
+      var data = LoginResponseModel.fromJson(
+        result.data as Map<String, dynamic>,
+      );
+
+      await apiService.saveToken(data.token);
+      return right(data);
     } on DioException catch (e) {
       final error = ServerFailure.fromDioException(e);
       return left(error);

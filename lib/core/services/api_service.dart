@@ -63,4 +63,11 @@ class ApiService {
     );
     return result;
   }
+
+  Future<void> saveToken(String token) async {
+  await storage.write(
+    key: 'token',
+    value: token,
+  );
+}
 }
