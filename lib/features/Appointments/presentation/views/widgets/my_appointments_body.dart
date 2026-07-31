@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tut_care/core/widgets/custom_error_widget.dart';
 import 'package:tut_care/core/widgets/custom_loading_indicator.dart';
-import 'package:tut_care/features/Appointments/data/models/my_appointment_model.dart';
 import 'package:tut_care/features/Appointments/presentation/manager/bloc/get_my_appointments_bloc.dart';
-import 'package:tut_care/features/Appointments/presentation/views/widgets/appointment_card.dart';
-import 'package:tut_care/features/Appointments/presentation/views/widgets/custom_add_appointment.dart';
-import 'package:tut_care/features/Appointments/presentation/views/widgets/custom_app_bar.dart';
+import 'package:tut_care/features/Appointments/presentation/views/widgets/custom_exist_appointments.dart';
 import 'package:tut_care/features/Appointments/presentation/views/widgets/custom_no_appointments.dart';
 
 class MyAppointmentsBody extends StatelessWidget {
@@ -40,39 +37,6 @@ class MyAppointmentsBody extends StatelessWidget {
 
         return const SizedBox.shrink();
       },
-    );
-  }
-}
-
-class CustomExistAppointments extends StatelessWidget {
-  const CustomExistAppointments({super.key, required this.myAppointments, });
-  final List<MyAppointmentModel> myAppointments;
-  @override
-  Widget build(BuildContext context) {
-    return CustomScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      slivers: [
-        const SliverToBoxAdapter(child: CustomAppBar(title: 'Appointments')),
-
-        const SliverToBoxAdapter(child: SizedBox(height: 16)),
-
-        SliverList(
-          delegate: SliverChildBuilderDelegate((context, index) {
-            return AppointmentCard(appointment: myAppointments[index]);
-          }, childCount: myAppointments.length),
-        ),
-
-        const SliverToBoxAdapter(child: SizedBox(height: 20)),
-
-        const SliverToBoxAdapter(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: CustomAddAppointment(),
-          ),
-        ),
-
-        const SliverToBoxAdapter(child: SizedBox(height: 24)),
-      ],
     );
   }
 }
