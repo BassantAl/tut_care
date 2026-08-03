@@ -4,10 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:tut_care/core/theme/app_colors.dart';
 import 'package:tut_care/core/theme/app_styles.dart';
+import 'package:tut_care/features/Appointments/presentation/views/widgets/custom_person_icon.dart';
 import 'package:tut_care/features/Appointments/data/models/my_appointment_model.dart';
 import 'package:tut_care/features/Appointments/presentation/manager/cancel_appointment_bloc/cancel_appointment_bloc.dart';
 import 'package:tut_care/features/Appointments/presentation/views/widgets/cancel_appointment_button.dart';
-import 'package:tut_care/features/Appointments/presentation/views/widgets/custom_person_icon.dart';
 import 'package:tut_care/features/Appointments/presentation/views/widgets/details_info_row.dart';
 import 'package:tut_care/features/Appointments/presentation/views/widgets/status_badge.dart';
 
@@ -24,7 +24,6 @@ class AppointmentDetailsBody extends StatefulWidget {
 }
 
 class _AppointmentDetailsBodyState extends State<AppointmentDetailsBody> {
- 
   late int _displayedStatus;
 
   @override
@@ -47,7 +46,7 @@ class _AppointmentDetailsBodyState extends State<AppointmentDetailsBody> {
     return BlocListener<CancelAppointmentBloc, CancelAppointmentState>(
       listener: (context, state) {
         if (state is CancelAppointmentOptimistic) {
-          setState(() => _displayedStatus = 3);
+          setState(() => _displayedStatus = 4);
         }
 
         if (state is CancelAppointmentSuccess) {
@@ -72,38 +71,37 @@ class _AppointmentDetailsBodyState extends State<AppointmentDetailsBody> {
         }
       },
       child: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _AppointmentDetailsHeader(
-                appointment: widget.appointment,
-                displayedStatus: _displayedStatus,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 650),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _AppointmentDetailsHeader(
+                    appointment: widget.appointment,
+                    displayedStatus: _displayedStatus,
+                  ),
+                  const SizedBox(height: 24),
+                  const Divider(height: 1, color: Color(0xffE5E7EB)),
+                  const SizedBox(height: 24),
+                  _AppointmentDetailsInfo(appointment: widget.appointment),
+                  const SizedBox(height: 36),
+                  CancelAppointmentButton(
+                    onTap: _onCancelTap,
+                    isCancelled: _displayedStatus == 4 || _displayedStatus == 3,
+                  ),
+                  const SizedBox(height: 24),
+                ],
               ),
-
-              const SizedBox(height: 28),
-              const Divider(),
-              const SizedBox(height: 20),
-
-              _AppointmentDetailsInfo(appointment: widget.appointment),
-
-              const SizedBox(height: 32),
-
-              CancelAppointmentButton(
-                onTap: _onCancelTap,
-                isCancelled: _displayedStatus == 4,
-              ),
-
-              const SizedBox(height: 24),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 }
-
 
 class _AppointmentDetailsHeader extends StatelessWidget {
   const _AppointmentDetailsHeader({
@@ -119,16 +117,17 @@ class _AppointmentDetailsHeader extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const CustomPersonIcon(),
+        const CustomPersonIcon(radius: 30, iconSize: 28),
         const SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                appointment.doctor.id.toString(),
+                'Doctor ID: ${appointment.doctor.id}',
                 style: AppStyles.medium20(context).copyWith(
                   fontWeight: FontWeight.bold,
+                  color: const Color(0xff1A1B22),
                 ),
               ),
               const SizedBox(height: 4),
@@ -159,32 +158,47 @@ class _AppointmentDetailsInfo extends StatelessWidget {
     final notes =
         (appointment.notes?.isNotEmpty ?? false) ? appointment.notes! : '—';
 
-    return Column(
-      children: [
-        DetailsInfoRow(
-          icon: Icons.calendar_today_outlined,
-          label: 'Date',
-          value: date,
-        ),
-        const SizedBox(height: 20),
-        DetailsInfoRow(
-          icon: Icons.access_time_outlined,
-          label: 'Time',
-          value: time,
-        ),
-        const SizedBox(height: 20),
-        DetailsInfoRow(
-          icon: Icons.medical_services_outlined,
-          label: 'Specialization',
-          value: appointment.doctor.specialization,
-        ),
-        const SizedBox(height: 20),
-        DetailsInfoRow(
-          icon: Icons.notes_outlined,
-          label: 'Notes',
-          value: notes,
-        ),
-      ],
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          DetailsInfoRow(
+            icon: Icons.calendar_today_outlined,
+            label: 'Date',
+            value: date,
+          ),
+          const SizedBox(height: 20),
+          DetailsInfoRow(
+            icon: Icons.access_time_outlined,
+            label: 'Time',
+            value: time,
+          ),
+          const SizedBox(height: 20),
+          DetailsInfoRow(
+            icon: Icons.medical_services_outlined,
+            label: 'Specialization',
+            value: appointment.doctor.specialization,
+          ),
+          const SizedBox(height: 20),
+          DetailsInfoRow(
+            icon: Icons.notes_outlined,
+            label: 'Notes',
+            value: notes,
+          ),
+        ],
+      ),
     );
   }
 }

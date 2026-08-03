@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tut_care/core/theme/app_colors.dart';
 import 'package:tut_care/core/theme/app_styles.dart';
 import 'package:tut_care/core/widgets/custom_button.dart';
 import 'package:tut_care/core/widgets/custom_loading_indicator.dart';
 import 'package:tut_care/features/Appointments/presentation/manager/cancel_appointment_bloc/cancel_appointment_bloc.dart';
-
 
 class CancelAppointmentButton extends StatelessWidget {
   const CancelAppointmentButton({
@@ -14,32 +14,31 @@ class CancelAppointmentButton extends StatelessWidget {
   });
 
   final VoidCallback onTap;
-
-  
   final bool isCancelled;
 
-  
   @override
-Widget build(BuildContext context) {
-  return BlocBuilder<CancelAppointmentBloc, CancelAppointmentState>(
-    builder: (context, state) {
-      final isLoading = state is CancelAppointmentOptimistic;
+  Widget build(BuildContext context) {
+    return BlocBuilder<CancelAppointmentBloc, CancelAppointmentState>(
+      builder: (context, state) {
+        final isLoading = state is CancelAppointmentOptimistic;
+        final buttonColor = isCancelled
+            ? Colors.grey.shade400
+            : AppColors.errorColor;
 
-      return GestureDetector(
-        onTap: isCancelled || isLoading ? null : onTap,
-        child: CustomButton(
-          color: isCancelled ? Colors.grey : Colors.red.shade400,
+        return CustomButton(
+          color: buttonColor,
+          onTap: isCancelled || isLoading ? null : onTap,
           child: isLoading
               ? const CustomLoadingIndicator()
               : Text(
-                  isCancelled
-                      ? 'Cancelled'
-                      : 'Cancel Appointment',
-                  style: AppStyles.medium18(context),
+                  isCancelled ? 'Appointment Cancelled' : 'Cancel Appointment',
+                  style: AppStyles.medium18(context).copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 }

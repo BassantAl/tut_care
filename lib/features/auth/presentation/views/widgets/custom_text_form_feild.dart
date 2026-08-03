@@ -10,8 +10,13 @@ class CustomTextFormFeild extends StatelessWidget {
     this.validator,
     this.obscureText,
     this.suffixIcon,
-    this.controller, this.onSaved, this.onChanged,
+    this.controller,
+    this.onSaved,
+    this.onChanged,
+    this.readOnly = false,
+    this.onTap,
   });
+
   final String hintText;
   final String title;
   final String? Function(String?)? validator;
@@ -20,19 +25,30 @@ class CustomTextFormFeild extends StatelessWidget {
   final TextEditingController? controller;
   final Function(String?)? onSaved;
   final Function(String)? onChanged;
+  final bool readOnly;
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: AppStyles.medium14(context)),
+        Text(
+          title,
+          style: AppStyles.medium14(context).copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 8),
         TextFormField(
-          onChanged:onChanged ,
+          readOnly: readOnly,
+          onTap: onTap,
+          onChanged: onChanged,
           onSaved: onSaved,
           controller: controller,
           obscureText: obscureText ?? false,
           validator: validator,
-          decoration: AppDecoration.decorationForTextInputFeild(
+          decoration: AppDecoration.decorationForTextInputField(
             suffixIcon: suffixIcon,
             context: context,
             hintText: hintText,

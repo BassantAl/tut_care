@@ -40,16 +40,20 @@ class MyAppointmentsBody extends StatelessWidget {
                     );
               },
               child: state.myAppointments.isEmpty
-                  ? const CustomNoAppoinments()
+                  ? const CustomNoAppointments()
                   : CustomExistAppointments(
                       myAppointments: state.myAppointments,
                     ),
             ),
             bottomNavigationBar: SafeArea(
               minimum: const EdgeInsets.all(16),
-              child: GestureDetector(
-                onTap: () => _navigateToBook(context),
-                child: const CustomAddAppointment(),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 700),
+                  child: CustomAddAppointment(
+                    onTap: () => _navigateToBook(context),
+                  ),
+                ),
               ),
             ),
           );

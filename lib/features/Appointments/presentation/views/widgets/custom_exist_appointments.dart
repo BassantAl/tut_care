@@ -17,55 +17,43 @@ class CustomExistAppointments extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      slivers: [
-        const SliverToBoxAdapter(
-          child: CustomAppBar(title: 'Appointments'),
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            const SliverToBoxAdapter(
+              child: CustomAppBar(title: 'My Appointments'),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 12),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final appointment = myAppointments[index];
+                  return AppointmentCard(
+                    appointment: appointment,
+                    onTap: () => _navigateToDetails(context, appointment),
+                  );
+                },
+                childCount: myAppointments.length,
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 24),
+            ),
+          ],
         ),
-
-        const SliverToBoxAdapter(
-          child: SizedBox(height: 16),
-        ),
-
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              final appointment = myAppointments[index];
-              return _TappableAppointmentCard(
-                appointment: appointment,
-              );
-            },
-            childCount: myAppointments.length,
-          ),
-        ),
-
-        const SliverToBoxAdapter(
-          child: SizedBox(height: 24),
-        ),
-      ],
-    );
-  }
-}
-
-class _TappableAppointmentCard extends StatelessWidget {
-  const _TappableAppointmentCard({
-    required this.appointment,
-  });
-
-  final MyAppointmentModel appointment;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => _navigateToDetails(context),
-      child: AppointmentCard(
-        appointment: appointment,
       ),
     );
   }
 
-  Future<void> _navigateToDetails(BuildContext context) async {
+  Future<void> _navigateToDetails(
+    BuildContext context,
+    MyAppointmentModel appointment,
+  ) async {
     final result = await GoRouter.of(context).push<bool>(
       AppRoutes.appointmentDetails,
       extra: appointment,

@@ -7,19 +7,23 @@ class LoginBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: Center(
-      child: Padding(
-        padding: EdgeInsets.all(16),
+    return SafeArea(
+      child: Center(
         child: SingleChildScrollView(
-          child: const Column(
-            children: [
-              LoginHeader(),
-              SizedBox(height: 30),
-              CustomLoginForm()
-            ],
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                LoginHeader(),
+                SizedBox(height: 36),
+                CustomLoginForm(),
+              ],
+            ),
           ),
         ),
-        ),
-    ));
+      ),
+    );
   }
 }

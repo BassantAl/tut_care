@@ -12,7 +12,7 @@ class BookAppointment extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-         BlocProvider(
+        BlocProvider(
           create: (_) => GetDoctorsBloc()..add(DoctorsEvent()),
         ),
         BlocProvider(
@@ -21,8 +21,8 @@ class BookAppointment extends StatelessWidget {
       ],
       child: Scaffold(
         body: AdaptiveLayout(
-          mobileLayout: (context) => BookAppointmentBody(),
-          tabletLayout: (context) => BookAppointmentBody(),
+          mobileLayout: (context) => const BookAppointmentBody(),
+          tabletLayout: (context) => const BookAppointmentBody(),
         ),
       ),
     );

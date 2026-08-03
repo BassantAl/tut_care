@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tut_care/core/theme/app_decoration.dart';
+import 'package:tut_care/features/auth/presentation/views/widgets/custom_text_form_feild.dart';
 
 class AppointmentDateField extends StatelessWidget {
   const AppointmentDateField({
@@ -14,19 +14,15 @@ class AppointmentDateField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    final dateText = date == null ? '' : DateFormat('dd MMM yyyy').format(date!);
+
+    return CustomTextFormFeild(
+      title: 'Appointment Date',
+      hintText: 'Select Date',
       readOnly: true,
       onTap: onTap,
-      controller: TextEditingController(
-        text: date == null
-            ? ''
-            : DateFormat('dd MMM yyyy').format(date!),
-      ),
-      decoration: AppDecoration.decorationForTextInputFeild(
-        context: context,
-        hintText: 'Select Date',
-        suffixIcon: const Icon(Icons.calendar_today),
-      ),
+      controller: TextEditingController(text: dateText),
+      suffixIcon: const Icon(Icons.calendar_today_outlined),
     );
   }
 }

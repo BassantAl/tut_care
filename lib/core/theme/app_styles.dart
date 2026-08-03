@@ -4,6 +4,7 @@ import 'package:tut_care/core/utils/size_config.dart';
 
 class AppStyles {
   AppStyles._();
+
   static TextStyle bold38(BuildContext context) {
     return TextStyle(
       fontWeight: FontWeight.bold,
@@ -74,17 +75,16 @@ double getResponsiveFontsize({
   required BuildContext context,
 }) {
   double responsiveFontSize = fontsize * getScaleFactor(context);
-
-  double lowerLimit = responsiveFontSize * 0.8;
-  double upperLimit = responsiveFontSize * 1.2;
+  double lowerLimit = fontsize * 0.85;
+  double upperLimit = fontsize * 1.2;
   return responsiveFontSize.clamp(lowerLimit, upperLimit);
 }
 
 double getScaleFactor(BuildContext context) {
   double width = MediaQuery.sizeOf(context).width;
   if (width < SizeConfig.tablet) {
-    return width / 500;
+    return (width / 390).clamp(0.9, 1.1);
   } else {
-    return width / 1000;
+    return (width / 800).clamp(1.0, 1.25);
   }
 }

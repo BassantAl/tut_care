@@ -10,7 +10,7 @@ import 'package:tut_care/my_bloc_observer.dart';
 
 void main() {
   setupServiceLocator();
-  Bloc.observer = MyBlockObserver();
+  Bloc.observer = MyBlocObserver();
   runApp(const MyApp());
 }
 
@@ -47,6 +47,7 @@ class _MyAppState extends State<MyApp> {
         scaffoldBackgroundColor: AppColors.backgroundColor,
         appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.backgroundColor,
+          elevation: 0,
         ),
       ),
     );

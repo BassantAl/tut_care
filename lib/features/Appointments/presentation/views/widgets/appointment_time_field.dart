@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tut_care/core/theme/app_decoration.dart';
+import 'package:tut_care/features/auth/presentation/views/widgets/custom_text_form_feild.dart';
 
 class AppointmentTimeField extends StatelessWidget {
   const AppointmentTimeField({
@@ -13,17 +13,15 @@ class AppointmentTimeField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    final timeText = time == null ? '' : time!.format(context);
+
+    return CustomTextFormFeild(
+      title: 'Appointment Time',
+      hintText: 'Select Time',
       readOnly: true,
       onTap: onTap,
-      controller: TextEditingController(
-        text: time == null ? '' : time!.format(context),
-      ),
-      decoration: AppDecoration.decorationForTextInputFeild(
-        context: context,
-        hintText: 'Select Time',
-        suffixIcon: const Icon(Icons.access_time),
-      ),
+      controller: TextEditingController(text: timeText),
+      suffixIcon: const Icon(Icons.access_time_outlined),
     );
   }
 }

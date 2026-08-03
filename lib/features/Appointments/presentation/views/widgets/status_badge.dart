@@ -15,27 +15,28 @@ class StatusBadge extends StatelessWidget {
 
     switch (status) {
       case 0:
-        color = Colors.orange;
+        color = const Color(0xffF59E0B);
         text = 'Pending';
         break;
 
       case 1:
-        color = Colors.green;
+        color = const Color(0xff10B981);
         text = 'Confirmed';
         break;
 
       case 2:
-        color = Colors.blue;
+        color = const Color(0xff3B82F6);
         text = 'Completed';
         break;
 
+      case 3:
       case 4:
-        color = Colors.red;
+        color = const Color(0xffEF4444);
         text = 'Cancelled';
         break;
 
       default:
-        color = Colors.grey;
+        color = const Color(0xff6B7280);
         text = 'Unknown';
     }
 
@@ -45,14 +46,17 @@ class StatusBadge extends StatelessWidget {
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(.15),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
       ),
       child: Text(
         text,
         style: TextStyle(
           color: color,
+          fontSize: 13,
           fontWeight: FontWeight.bold,
+          letterSpacing: 0.2,
         ),
       ),
     );

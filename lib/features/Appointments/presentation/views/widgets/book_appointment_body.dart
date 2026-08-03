@@ -67,80 +67,76 @@ class _BookAppointmentBodyState extends State<BookAppointmentBody> {
                 selectedDoctor = state.doctors.first;
               }
 
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomAppBar(
-                      leading: GestureDetector(
-                        onTap: () => context.pop(),
-                        child: const Icon(Icons.arrow_back),
-                      ),
-                      title: 'Book Appointment',
+              return Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 600),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomAppBar(
+                          leading: IconButton(
+                            icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                            color: AppColors.primary,
+                            onPressed: () => context.pop(),
+                          ),
+                          title: 'Book Appointment',
+                        ),
+                        const SizedBox(height: 12),
+                        if (selectedDoctor != null)
+                          _SelectedDoctorLabel(
+                            doctorName: selectedDoctor!.fullName,
+                          ),
+                        const SizedBox(height: 20),
+                        DoctorDropdown(
+                          doctors: state.doctors,
+                          value: selectedDoctor,
+                          onChanged: (doctor) {
+                            setState(() => selectedDoctor = doctor);
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        AppointmentDateField(
+                          date: selectedDate,
+                          onTap: () async {
+                            final date = await showDatePicker(
+                              context: context,
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime(2030),
+                              initialDate: DateTime.now(),
+                            );
+                            if (date != null) {
+                              setState(() => selectedDate = date);
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        AppointmentTimeField(
+                          time: selectedTime,
+                          onTap: () async {
+                            final time = await showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay.now(),
+                            );
+                            if (time != null) {
+                              setState(() => selectedTime = time);
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 40),
+                        BlocBuilder<BookAppointmentBloc, BookAppointmentState>(
+                          builder: (context, bookState) {
+                            return BookAppointmentButton(
+                              onTap: bookState is BookAppointmentLoading
+                                  ? null
+                                  : _onBookTap,
+                            );
+                          },
+                        ),
+                      ],
                     ),
-
-                    const SizedBox(height: 8),
-
-                    if (selectedDoctor != null)
-                      _SelectedDoctorLabel(
-                        doctorName: selectedDoctor!.fullName,
-                      ),
-
-                    const SizedBox(height: 16),
-
-                    DoctorDropdown(
-                      doctors: state.doctors,
-                      value: selectedDoctor,
-                      onChanged: (doctor) {
-                        setState(() => selectedDoctor = doctor);
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    AppointmentDateField(
-                      date: selectedDate,
-                      onTap: () async {
-                        final date = await showDatePicker(
-                          context: context,
-                          firstDate: DateTime.now(),
-                          lastDate: DateTime(2030),
-                          initialDate: DateTime.now(),
-                        );
-                        if (date != null) {
-                          setState(() => selectedDate = date);
-                        }
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    AppointmentTimeField(
-                      time: selectedTime,
-                      onTap: () async {
-                        final time = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.now(),
-                        );
-                        if (time != null) {
-                          setState(() => selectedTime = time);
-                        }
-                      },
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    BlocBuilder<BookAppointmentBloc, BookAppointmentState>(
-                      builder: (context, bookState) {
-                        return BookAppointmentButton(
-                          onTap: bookState is BookAppointmentLoading
-                              ? null
-                              : _onBookTap,
-                        );
-                      },
-                    ),
-                  ],
+                  ),
                 ),
               );
             }
@@ -175,13 +171,13 @@ class _BookAppointmentBodyState extends State<BookAppointmentBody> {
     );
 
     context.read<BookAppointmentBloc>().add(
-      BookAppointmentRequested(
-        request: BookAppointmentRequestModel(
-          doctorId: selectedDoctor!.id,
-          appointmentDate: appointmentDateTime,
-        ),
-      ),
-    );
+          BookAppointmentRequested(
+            request: BookAppointmentRequestModel(
+              doctorId: selectedDoctor!.id,
+              appointmentDate: appointmentDateTime,
+            ),
+          ),
+        );
   }
 
   void _showError(String message) {
@@ -205,21 +201,30 @@ class _SelectedDoctorLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Icon(
-          Icons.check_circle_outline,
-          size: 16,
-          color: AppColors.secondary,
-        ),
-        const SizedBox(width: 6),
-        Text(
-          'Booking with $doctorName',
-          style: AppStyles.medium14(
-            context,
-          ).copyWith(color: AppColors.secondary, fontWeight: FontWeight.w600),
-        ),
-      ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.secondary.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.check_circle_outline,
+            size: 16,
+            color: AppColors.secondary,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            'Booking with $doctorName',
+            style: AppStyles.medium14(context).copyWith(
+              color: AppColors.secondary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

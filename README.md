@@ -2,31 +2,55 @@
 
 ## Overview
 
-Tut Care is a Flutter application that allows patients to authenticate, book appointments with doctors, view their appointments, and cancel existing appointments. The application communicates with the provided REST API and follows a clean, maintainable architecture.
+Tut Care is a Flutter application that allows patients to securely log in, view their appointments, book new appointments, and cancel existing ones using the provided REST API.
+
+The project follows a clean feature-based architecture with Bloc state management, dependency injection, centralized networking, and reusable UI components.
 
 ---
 
-## Setup
+# Setup
 
-### Prerequisites
+## Prerequisites
 
-* Flutter SDK 3.x or later
-* Dart SDK
-* Android Studio or VS Code
-* Android Emulator or Physical Device
-* Backend API running and accessible
+- Flutter SDK 3.x or later
+- Dart SDK
+- Android Studio or VS Code
+- Android Emulator or Physical Device
+- Running backend API
 
+## Installation
 
+1. Clone the repository
 
-## Project Architecture
+```bash
+git clone https://github.com/BassantAl/tut_care.git
+```
 
-The project follows **Clean Architecture** with feature-based organization.
+2. Install dependencies
+
+```bash
+flutter pub get
+```
+
+3. Run the application
+
+```bash
+flutter run
+```
+
+---
+
+# Project Structure
+
+The project follows a feature-based architecture.
 
 ```
 lib/
 │
 ├── core/
-│   ├── networking/
+│   ├── constants/
+│   ├── di/
+│   ├── errors/
 │   ├── routes/
 │   ├── services/
 │   ├── theme/
@@ -34,112 +58,229 @@ lib/
 │   └── widgets/
 │
 ├── features/
+│
 │   ├── auth/
-│   └── appointments/
+│   │   ├── data/
+│   │   └── presentation/
+│   │
+│   └── Appointments/
 │       ├── data/
-│       ├── domain/
 │       └── presentation/
 ```
 
-Each feature is divided into:
+## Core
 
-* Data
-  * Models
-  * Repository implementation
-  
+The `core` folder contains shared functionality used across the application.
 
-* Presentation
+- API constants
+- Dependency Injection using GetIt
+- Error handling
+- Routing with GoRouter
+- Network services using Dio
+- Secure storage
+- Shared themes
+- Responsive utilities
+- Reusable widgets
 
-  * Views
-  * Widgets
-  * Bloc
-  * Events
-  * States
+## Features
 
-This structure keeps business logic separated from the UI and makes the project easier to maintain and extend.
+Each feature is divided into two layers.
 
----
+### Data
 
-## State Management
+Contains:
 
-The application uses **flutter_bloc (Bloc)**.
+- Models
+- Repository implementation
 
-Reasons for choosing Bloc:
+### Presentation
 
-* Clear separation between UI and business logic.
-* Predictable state transitions.
-* Easy error handling.
-* Scalable for medium and large applications.
-* Simplifies testing.
+Contains:
 
-Different blocs are responsible for independent features, including:
+- Views
+- Widgets
+- Bloc
+- Events
+- States
 
-* Login
-* Get Doctors
-* Book Appointment
-* Get My Appointments
-* Cancel Appointment
+This separation keeps the UI independent from networking and business logic, making the project easier to maintain and extend.
 
 ---
 
-## Authentication & Token Handling
+# State Management
 
-### Login
+The application uses **flutter_bloc**.
 
-* The user authenticates using email and password.
-* The backend returns an access token.
-* The token is stored securely using Flutter Secure Storage.
+Each feature has its own Bloc responsible for handling business logic and state changes.
 
-### Authorized Requests
+Implemented Blocs:
 
-Every authenticated request automatically attaches:
+- LoginBloc
+- GetDoctorsBloc
+- BookAppointmentBloc
+- GetMyAppointmentsBloc
+- CancelAppointmentBloc
+
+Widgets remain responsible only for displaying data and handling user interaction.
+
+---
+
+# Authentication
+
+## Login
+
+The user signs in using email and password.
+
+After successful authentication, the backend returns an access token.
+
+The token is stored securely using FlutterSecureStorage.
+
+## Authorized Requests
+
+Every authenticated request automatically includes
 
 ```
 Authorization: Bearer <token>
 ```
 
-using a Dio interceptor.
+through a Dio interceptor.
 
-### Token Expiration
+## Session Handling
 
-When the backend returns **401 Unauthorized**:
+If the backend returns **401 Unauthorized**
 
-* The stored token is deleted.
-* The user is redirected to the login screen.
-* Further authenticated requests require logging in again.
+- the stored token is removed
+- a session expiration event is emitted
+- the application redirects the user back to the Login screen
 
----
-
-## Features
-
-* User Login
-* Secure Authentication
-* Doctor List
-* Book Appointment
-* View Appointments
-* Cancel Appointment
-* Pull to Refresh
-* Error Handling
-* Loading States
+This behavior is handled centrally without repeating logic inside individual screens.
 
 ---
 
-## Known Limitations
+# Features
 
-* Doctor names are not included in the My Appointments API response, therefore the application displays the available doctor identifier instead.
-* Duplicate appointment validation depends on backend implementation.
-* Token refresh is not implemented because the provided backend only supports session expiration with re-authentication.
-* Offline support is not implemented.
+- Secure Login
+- Secure Token Storage
+- Fetch Available Doctors
+- Book Appointment
+- View My Appointments
+- Pull to Refresh
+- Appointment Details
+- Cancel Appointment
+- Optimistic UI Update during cancellation
+- Responsive Mobile and Tablet layouts
+- Centralized Error Handling
 
 ---
 
-## Technologies
+# Responsive Design
 
-* Flutter
-* Dart
-* flutter_bloc
-* Dio
-* GoRouter
-* Flutter Secure Storage
-* dartz
-* getit
+The application supports both mobile and tablet layouts.
+
+Responsive behavior is implemented using:
+
+- AdaptiveLayout
+- LayoutBuilder
+- ConstrainedBox
+- SizeConfig responsive typography
+
+This keeps spacing, typography, and content readable across different screen sizes.
+
+---
+
+# Error Handling
+
+Network failures are handled centrally.
+
+Server failures are mapped into user-friendly messages including:
+
+- Connection timeout
+- Receive timeout
+- No internet connection
+- Bad response
+- Unauthorized request
+- Forbidden request
+- Resource not found
+- Validation errors
+- Conflict errors
+- Internal server errors
+
+Loading, empty, success, and failure states are handled separately using Bloc states.
+
+---
+
+# Time Spent
+
+| Task | Estimated Time |
+|------|---------------:|
+| Project Setup & Dependency Injection | 2 Hours |
+| Authentication | 3 Hours |
+| Appointment Feature | 5 Hours |
+| UI Design & Responsive Layout | 4 Hours |
+| Refactoring & Manual Testing | 2 Hours |
+| **Total** | **16 Hours** |
+
+---
+
+# Testing Approach
+
+The project was tested manually.
+
+## Authentication
+
+- Login with valid credentials
+- Login with invalid credentials
+- Empty input validation
+- Email format validation
+
+## Session Handling
+
+- Verified Authorization header
+- Verified automatic logout after 401 response
+
+## Appointments
+
+- Fetch appointments
+- Pull to refresh
+- Book appointment
+- Cancel appointment
+- Automatic refresh after booking
+- Automatic refresh after cancellation
+
+## Booking
+
+- Doctor selection
+- Date picker
+- Time picker
+- Required field validation
+
+## Responsive Layout
+
+Tested on
+
+- Mobile screens
+- Tablet screens
+
+to verify layout constraints, spacing, and typography.
+
+---
+
+
+# Technologies
+
+- Flutter
+- Dart
+- flutter_bloc
+- bloc
+- Dio
+- GetIt
+- GoRouter
+- FlutterSecureStorage
+- Dartz
+- Intl
+
+---
+
+# Git History
+
+The project was developed using incremental commits with descriptive commit messages rather than a single final commit to clearly show the development process.
